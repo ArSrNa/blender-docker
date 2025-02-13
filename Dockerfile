@@ -1,5 +1,4 @@
-FROM nvidia/cuda:12.6.3-cudnn-devel-ubuntu22.04
-
+FROM nvidia/cudagl:11.4.2-base-ubuntu20.04
 # 修改镜像源
 RUN sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list && \
 	sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list && \
@@ -18,18 +17,19 @@ RUN apt-get update && \
 	curl wget nano \
 	bzip2 libfreetype6 libgl1-mesa-dev \
 	libglu1-mesa \
-	libxi6 libxrender1 && \
+	libxi6 libxrender1 libxkbcommon0 \
+	libsm6 libxext6 libxcursor1 libxinerama1 libgl1-mesa-glx \
+	xz-utils && \
 	apt-get -y autoremove
 
 # Install blender
-
 RUN mkdir /usr/local/blender && \
 	wget --quiet ${BLENDER_TAR_URL} -O blender.tar.xz && \
 	tar -xvf blender.tar.xz -C /usr/local/blender --strip-components=1 && \
 	rm blender.tar.xz
 
-
 VOLUME /media
 
-
-ENTRYPOINT ["/usr/local/blender/blender", "-b"]
+COPY ./entry.sh /start.sh
+RUN chmod +x /start.sh
+ENTRYPOINT ["/start.sh"]

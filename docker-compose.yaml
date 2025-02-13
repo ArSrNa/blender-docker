@@ -5,8 +5,11 @@ services:
     image: docker.cnb.cool/arsrna/blender-docker
     container_name: blender
     volumes:
-      - ./data:/data
-    # environment:
-    #   - 
+      - ./data:/media
+    environment:
+    # 对外使用时请注意注入风险！
+    # blender参数请参考：https://docs.blender.org/manual/zh-hans/dev/advanced/command_line/render.html
+    # 以下示例是渲染./data/test.blend的第一帧并输出到./data/1.png
+      - BLENDER_ARGS="/media/test.blend -o /media/# -F png -f 1"
 
     runtime: nvidia
