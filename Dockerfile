@@ -9,7 +9,7 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
 	echo "Asia/Shanghai" > /etc/timezone
 
 ENV BLENDER_MAJOR 3.6
-ENV BLENDER_VERSION 3.6.20
+ENV BLENDER_VERSION 3.6.14
 ENV BLENDER_TAR_URL https://mirrors.aliyun.com/blender/release/Blender${BLENDER_MAJOR}/blender-${BLENDER_VERSION}-linux-x64.tar.xz
 
 RUN apt-get update && \
