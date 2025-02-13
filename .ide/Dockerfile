@@ -1,4 +1,5 @@
-FROM nvidia/cudagl:11.4.2-base-ubuntu20.04
+# FROM nvidia/cudagl:11.4.2-base-ubuntu20.04
+FROM cnbcool/default-dev-env:latest
 # 修改镜像源
 RUN sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list && \
 	sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list && \
