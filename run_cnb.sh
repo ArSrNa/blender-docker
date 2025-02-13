@@ -1,0 +1,1 @@
+/usr/local/blender/blender -b /workspace/tests/ori_1222.blend -o /workspace/data/# -F png -f 3713
