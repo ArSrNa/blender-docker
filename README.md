@@ -2,16 +2,6 @@
 
 This is the repo for the [vogete/blender-cuda](https://hub.docker.com/r/vogete/blender-cuda) Docker image for Blender command line rendering with NVIDIA CUDA capable GPUs. The image is based on the [nvidia/cuda](https://hub.docker.com/r/nvidia/cuda/) image (devel tag) and requires [NVIDIA Container Runtime for Docker (nvidia-docker)](https://github.com/NVIDIA/nvidia-docker) to be installed.
 
-## Tags
-
-- [blender2.79b-cuda10.0-ubuntu18.04](blender2.79b/cuda10.0/ubuntu18.04/Dockerfile)
-- [blender2.83-cuda10.2-ubuntu18.04](blender2.83/cuda10.2/ubuntu18.04/Dockerfile)
-- [blender2.83-cuda11.3-ubuntu18.04](blender2.83/cuda11.3/ubuntu18.04/Dockerfile)
-- [blender2.83-cuda11.3-ubuntu20.04](blender2.83/cuda11.3/ubuntu20.04/Dockerfile)
-- [blender2.92-cuda10.2-ubuntu18.04](blender2.92/cuda10.2/ubuntu18.04/Dockerfile)
-- [blender2.92-cuda11.3-ubuntu18.04](blender2.92/cuda11.3/ubuntu18.04/Dockerfile)
-- [blender2.92-cuda11.3-ubuntu20.04](blender2.92/cuda11.3/ubuntu20.04/Dockerfile)
-
 ## Requirements
 
 - NVIDIA driver for your GPUs
