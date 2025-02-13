@@ -1,4 +1,15 @@
 master:
+  vscode:
+    - docker:
+        build: .ide/Dockerfile
+      runner:
+        tags: cnb:arch:amd64:gpu
+      services:
+        - vscode
+        - docker
+      stages:
+        - name: 启动
+          script: echo "hello world"
   push:
     - services:
         - docker
