@@ -1,0 +1,12 @@
+version: "3.7"
+
+services:
+  blender:
+    image: docker.cnb.cool/arsrna/blender-docker
+    container_name: blender
+    volumes:
+      - ./data:/data
+    # environment:
+    #   - 
+
+    runtime: nvidia
