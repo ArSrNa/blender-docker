@@ -12,11 +12,11 @@ scene.render.resolution_percentage = 100
 
 # 设置输出路径和格式
 scene.render.filepath = "/workspace/data/output/####"
-scene.render.image_settings.file_format = 'PNG'
+scene.render.image_settings.file_format = 'JPEG'
 
 # 渲染范围
-scene.frame_start = 1000      # 起始帧
-scene.frame_end = 1010       # 结束帧
+scene.frame_start = 1      # 起始帧
+scene.frame_end = 500       # 结束帧
 
 # 因mmd插件在部分机器加载时变成了正交视角，这里强制转为透视
 # 遍历场景中的所有对象
