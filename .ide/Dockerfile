@@ -20,11 +20,13 @@ RUN apt-get update && \
 	libglu1-mesa \
 	libxi6 libxrender1 libxkbcommon0 \
 	libsm6 libxext6 libxcursor1 libxinerama1 libgl1-mesa-glx \
+	xfce4 xfce4-goodies \
 	xz-utils && \
-	apt-get -y autoremove
+	apt --fix-broken install && \
+	apt-get -y autoremove 
 
 # 安装 ssh 服务，用于支持 VSCode 客户端通过 Remote-SSH 访问开发环境
-RUN apt-get update && apt-get install -y wget unzip openssh-server
+RUN apt-get install -y wget unzip openssh-server
 # 安装 code-server 和 vscode 常用插件
 RUN curl -fsSL https://code-server.dev/install.sh | sh \
   && code-server --install-extension redhat.vscode-yaml \
@@ -44,6 +46,8 @@ RUN mkdir /usr/local/blender && \
 	wget --quiet ${BLENDER_TAR_URL} -O blender.tar.xz && \
 	tar -xvf blender.tar.xz -C /usr/local/blender --strip-components=1 && \
 	rm blender.tar.xz
+
+ENV USER $(whoami)
 
 VOLUME /media
 
