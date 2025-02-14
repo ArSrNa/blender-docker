@@ -20,9 +20,7 @@ RUN apt-get update && \
 	libglu1-mesa \
 	libxi6 libxrender1 libxkbcommon0 \
 	libsm6 libxext6 libxcursor1 libxinerama1 libgl1-mesa-glx \
-	xfce4 xfce4-goodies \
 	xz-utils && \
-	apt --fix-broken install && \
 	apt-get -y autoremove 
 
 # 安装 ssh 服务，用于支持 VSCode 客户端通过 Remote-SSH 访问开发环境
