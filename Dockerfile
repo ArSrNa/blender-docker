@@ -1,3 +1,4 @@
+# 此dockerfile非cnb工作区使用，请不要使用此文件进行部署
 FROM nvidia/cudagl:11.4.2-base-ubuntu20.04
 # 修改镜像源
 RUN sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list && \
