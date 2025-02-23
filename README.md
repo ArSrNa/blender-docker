@@ -25,7 +25,10 @@
 - 将需要处理的`.blend`文件上传到工作区
 - 修改`eevee_render.py`，请参考下一章节[渲染脚本设置](#渲染脚本设置)
 ````shell
+# 使用eevee渲染
 /usr/local/blender/blender -b /workspace/{.blend文件} -P /workspace/eevee_render.py
+# 使用cycles渲染
+/usr/local/blender/blender -b /workspace/{.blend文件} -P /workspace/cycles_render.py
 ````
 
 # 渲染脚本设置
