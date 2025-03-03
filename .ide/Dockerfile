@@ -20,7 +20,7 @@ RUN apt-get update && \
 	libglu1-mesa \
 	libxi6 libxrender1 libxkbcommon0 \
 	libsm6 libxext6 libxcursor1 libxinerama1 libgl1-mesa-glx \
-	xz-utils htop axel && \
+	xz-utils htop axel novnc x11vnc xvfb && \
 	apt-get -y autoremove 
 
 # 安装 ssh 服务，用于支持 VSCode 客户端通过 Remote-SSH 访问开发环境
@@ -46,7 +46,7 @@ RUN mkdir /usr/local/blender && \
 	rm blender.tar.xz
 
 ENV USER $(whoami)
-
+ENV DISPLAY=:0.0
 VOLUME /media
-
+EXPOSE 8080
 ENTRYPOINT ["/bin/bash"]
