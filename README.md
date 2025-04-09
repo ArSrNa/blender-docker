@@ -30,10 +30,6 @@
 # 使用cycles渲染
 /usr/local/blender/blender -b /workspace/{.blend文件} -P /workspace/cycles_render.py
 ````
-## 使用VNC启动（Testing，不建议使用）
-打开云原生开发
-
-执行`./cnb.sh`启动vnc，在浏览器打开转发的8080端口即可，密码为`cnb666`
 
 # 渲染脚本设置
 
