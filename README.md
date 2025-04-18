@@ -2,6 +2,14 @@
 
 本镜像参考blender官方环境安装，
 
+# 接入ArRM集群渲染使用（推荐）
+
+## 下载控制端
+
+请前往 [https://www.arsrna.cn/app/render/](https://www.arsrna.cn/app/render/)，根据系统类型下载对应控制端
+
+
+
 # 在云原生开发中使用
 
 首先Fork本仓库，适配自己的开发环境。
@@ -48,7 +56,7 @@ for obj in bpy.data.objects:
 
 # TODO
 - [ ] 加入VNC功能，方便图形化修改
-- [ ] 嵌入[ArRM](https://www.arsrna.cn/app/render/)，方便集群调用、管理渲染任务
+- [√] 嵌入[ArRM](https://www.arsrna.cn/app/render/)，方便集群调用、管理渲染任务
 - [ ] **大家大胆想，有建议或者想实现的可以提issue**
 
 # 已知问题
