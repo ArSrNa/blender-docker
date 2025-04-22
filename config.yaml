@@ -4,7 +4,7 @@ blenderPath: "/usr/local/blender/blender"
 # 服务器开放监听的端口，请确保防火墙已放开
 port: 3000
 # 服务器密码
-password: "123456"
+password: "cnb666"
 # 缓存、文件输出路径
 outPath: "public/ArRM"
 # 限制文件上传大小，单位MB
