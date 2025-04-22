@@ -8,6 +8,8 @@ master:
       services:
         - vscode
         - docker
+      env:
+        CNB_WELCOME_EXECUTE_COMMAND: "./arrm/arrm_server"
       stages:
-        - name: 启动
-          script: echo "hello world"
+        - name: 启动控制端
+          script: ./arrm/arrm_control
