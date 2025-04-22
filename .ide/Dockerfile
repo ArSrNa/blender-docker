@@ -1,9 +1,9 @@
 FROM nvidia/cudagl:11.4.2-base-ubuntu20.04
 # FROM cnbcool/default-dev-env:latest
 # 修改镜像源
-RUN sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list && \
-	sed -i 's/security.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list && \
-	sed -i 's/cn.archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
+RUN sed -i 's/archive.ubuntu.com/mirrors.tencent.com/g' /etc/apt/sources.list && \
+	sed -i 's/security.ubuntu.com/mirrors.tencent.com/g' /etc/apt/sources.list && \
+	sed -i 's/cn.archive.ubuntu.com/mirrors.tencent.com/g' /etc/apt/sources.list
 
 # 设置时区
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
@@ -15,7 +15,7 @@ ENV BLENDER_TAR_URL https://mirrors.aliyun.com/blender/release/Blender${BLENDER_
 
 RUN apt-get update && \
 	apt-get install -y \
-	curl wget nano git unzip openssh-server \
+	curl wget nano git git-lfs unzip openssh-server \
 	bzip2 libfreetype6 libgl1-mesa-dev \
 	libglu1-mesa \
 	libxi6 libxrender1 libxkbcommon0 \

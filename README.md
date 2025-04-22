@@ -4,11 +4,29 @@
 
 # 接入ArRM集群渲染使用（推荐）
 
-## 下载控制端
+## 下载控制端（已默认下载）
 
 请前往 [https://www.arsrna.cn/app/render/](https://www.arsrna.cn/app/render/)，根据系统类型下载对应控制端
 
+目前本项目已经配置有了
 
+- 集群渲染控制端 `./arrm/arrm_control`，并已完成配置
+- 集群渲染从机端 `arrm_server`
+
+可以直接从cnb同时启动实现webui控制渲染的效果
+
+## 启动
+
+```bash
+cd arrm
+# 启动控制端
+./arrm_control
+# 启动从机端
+./arrm_server
+```
+
+
+没写完，等会
 
 # 在云原生开发中使用
 

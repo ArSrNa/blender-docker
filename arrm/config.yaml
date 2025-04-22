@@ -1,0 +1,11 @@
+# blender可执行文件路径，需要指定到可运行的blender文件下，而不是安装的目录
+# 注意：macOS中如果安装到应用程序内，则路径为：/Applications/Blender.app/Contents/MacOS/Blender
+blenderPath: "/usr/local/blender/blender"
+# 服务器开放监听的端口，请确保防火墙已放开
+port: 3000
+# 服务器密码
+password: "123456"
+# 缓存、文件输出路径
+outPath: "public/ArRM"
+# 限制文件上传大小，单位MB
+litmit: '10000'
