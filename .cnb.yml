@@ -4,7 +4,7 @@ master:
         build: .ide/Dockerfile
       runner:
         tags: cnb:arch:amd64:gpu
-        cpus: 32
+        cpus: 24
       services:
         - vscode
         - docker
@@ -12,4 +12,4 @@ master:
         CNB_WELCOME_EXECUTE_COMMAND: "./arrm/arrm_server"
       stages:
         - name: 启动控制端
-          script: ./arrm/arrm_control
+          script: "nohup ./arrm/arrm_control >/dev/null &"
