@@ -9,6 +9,24 @@ master:
         - docker
       env:
         CNB_WELCOME_EXECUTE_COMMAND: "./arrm/arrm_server"
+        BLENDER_MAJOR: 3.6
+        BLENDER_VERSION: 3.6.14
       stages:
         - name: 启动控制端
           script: "nohup ./arrm/arrm_control >/dev/null &"
+
+  tag_push:
+    - services:
+        - docker
+      env:
+        BLENDER_MAJOR: 3.6
+        BLENDER_VERSION: 3.6.14
+      stages:
+        - name: docker build
+          script: |
+            docker build \
+            --build-arg BLENDER_MAJOR=${BLENDER_MAJOR} \
+            --build-arg BLENDER_VERSION=${BLENDER_VERSION} \
+            -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}/blender:${BLENDER_VERSION} .
+        - name: docker push
+          script: docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}/blender:${BLENDER_VERSION}
