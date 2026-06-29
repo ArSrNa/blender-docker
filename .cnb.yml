@@ -3,7 +3,7 @@ master:
     - docker:
         build: .ide/Dockerfile
       runner:
-        tags: cnb:arch:amd64:gpu:L40
+        tags: cnb:arch:amd64:gpu
       services:
         - vscode
         - docker
