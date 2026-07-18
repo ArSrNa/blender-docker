@@ -19,8 +19,8 @@ master:
     - services:
         - docker
       env:
-        BLENDER_MAJOR: 3.6
-        BLENDER_VERSION: 3.6.14
+        BLENDER_MAJOR: 4.5
+        BLENDER_VERSION: 4.5.11
       stages:
         - name: docker build
           script: |
