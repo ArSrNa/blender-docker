@@ -1,7 +1,8 @@
 master:
   vscode:
     - docker:
-        build: .ide/Dockerfile
+        # build: .ide/Dockerfile
+        image: docker.cnb.cool/arsrna/blender-docker/blender:4.5.11
       runner:
         tags: cnb:arch:amd64:gpu
       services:
@@ -9,8 +10,6 @@ master:
         - docker
       env:
         CNB_WELCOME_EXECUTE_COMMAND: "./arrm/arrm_server"
-        BLENDER_MAJOR: 4.5
-        BLENDER_VERSION: 4.5.11
       stages:
         - name: 启动控制端
           script: "nohup ./arrm/arrm_control >/dev/null &"
