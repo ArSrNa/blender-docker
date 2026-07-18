@@ -1,8 +1,8 @@
 master:
   vscode:
     - docker:
-        # build: .ide/Dockerfile
-        image: docker.cnb.cool/arsrna/blender-docker/blender:4.5.11
+        build: .ide/Dockerfile
+        # image: docker.cnb.cool/arsrna/blender-docker/blender:4.5.11
       runner:
         tags: cnb:arch:amd64:gpu
       services:
