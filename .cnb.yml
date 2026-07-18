@@ -9,8 +9,8 @@ master:
         - docker
       env:
         CNB_WELCOME_EXECUTE_COMMAND: "./arrm/arrm_server"
-        BLENDER_MAJOR: 3.6
-        BLENDER_VERSION: 3.6.14
+        BLENDER_MAJOR: 4.5
+        BLENDER_VERSION: 4.5.11
       stages:
         - name: 启动控制端
           script: "nohup ./arrm/arrm_control >/dev/null &"
