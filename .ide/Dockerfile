@@ -6,7 +6,8 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.tencent.com/g' /etc/apt/sources.list &&
 	sed -i 's/cn.archive.ubuntu.com/mirrors.tencent.com/g' /etc/apt/sources.list
 
 # 设置时区
-RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+RUN export DEBIAN_FRONTEND=noninteractive && \
+	ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
 	echo "Asia/Shanghai" > /etc/timezone
 
 ARG BLENDER_MAJOR=4.5
@@ -21,7 +22,7 @@ RUN apt-get update && \
 	libglu1-mesa \
 	libxi6 libxrender1 libxkbcommon0 \
 	libsm6 libxext6 libxcursor1 libxinerama1 libgl1-mesa-glx \
-	xz-utils htop axel && \
+	xz-utils htop axel vulkan-tools && \
 	apt-get -y autoremove 
 
 # 安装 code-server 和 vscode 常用插件
