@@ -7,12 +7,11 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.tencent.com/g' /etc/apt/sources.list &&
 
 # 设置时区
 RUN export DEBIAN_FRONTEND=noninteractive && \
-	ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+	# ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
 	echo "Asia/Shanghai" > /etc/timezone
 
 ARG BLENDER_MAJOR=4.5
 ARG BLENDER_VERSION=4.5.11
-
 ENV BLENDER_TAR_URL https://mirrors.aliyun.com/blender/release/Blender${BLENDER_MAJOR}/blender-${BLENDER_VERSION}-linux-x64.tar.xz
 
 RUN apt-get update && \
@@ -38,11 +37,24 @@ RUN curl -fsSL https://code-server.dev/install.sh | sh \
 ENV LANG C.UTF-8
 ENV LANGUAGE C.UTF-8
 
-# Install blender
-RUN mkdir -p /usr/local/blender
+# 安装blender
+RUN mkdir -p /usr/local/blender && mkdir -p /usr/local/flamenco
+
+WORKDIR /usr/local/blender
 RUN wget --quiet ${BLENDER_TAR_URL} -O blender.tar.xz && \
 	tar -xvf blender.tar.xz -C /usr/local/blender --strip-components=1 && \
 	rm blender.tar.xz
-RUN ln -s /usr/local/blender/blender /usr/local/bin/blender
+
+WORKDIR /usr/local/flamenco
+COPY config/flamenco-manager.yaml /usr/local/flamenco/flamenco-manager.yaml
+# 安装flamenco
+RUN wget --quiet https://flamenco.blender.org/downloads/flamenco-3.9.2-linux-amd64.tar.gz -O flamenco.tar.gz &&\
+	tar -xzf flamenco.tar.gz -C /usr/local/flamenco --strip-components=1 && \
+	chmod +x ./flamenco-manager ./flamenco-worker && \
+	rm flamenco.tar.gz
+RUN ln -s /usr/local/blender/blender /usr/local/bin/blender && \
+	ln -s /usr/local/flamenco/flamenco-manager /usr/local/bin/flamenco-manager && \
+	ln -s /usr/local/flamenco/flamenco-worker /usr/local/bin/flamenco-worker
+
 
 ENTRYPOINT ["/bin/bash"]
