@@ -1,5 +1,5 @@
-FROM nvidia/cudagl:11.4.2-base-ubuntu20.04
-# FROM docker.cnb.cool/examples/language/cuda-12.4
+# FROM nvidia/cudagl:11.4.2-base-ubuntu20.04
+FROM docker.cnb.cool/examples/language/cuda-12.4
 # 修改镜像源
 RUN sed -i 's/archive.ubuntu.com/mirrors.tencent.com/g' /etc/apt/sources.list && \
 	sed -i 's/security.ubuntu.com/mirrors.tencent.com/g' /etc/apt/sources.list && \
