@@ -4,7 +4,7 @@ master:
         # build: .ide/Dockerfile
         image: docker.cnb.cool/arsrna/blender-docker/blender:4.5.11
       runner:
-        tags: cnb:arch:amd64:gpu
+        tags: cnb:arch:amd64:gpu:H20
       services:
         - vscode
         - docker
