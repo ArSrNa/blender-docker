@@ -1,5 +1,5 @@
-# FROM nvidia/cudagl:11.4.2-base-ubuntu20.04
-FROM docker.cnb.cool/examples/language/cuda-12.4
+FROM nvidia/cudagl:11.4.2-base-ubuntu20.04
+# FROM docker.cnb.cool/examples/language/cuda-12.4
 # 修改镜像源
 RUN sed -i 's/archive.ubuntu.com/mirrors.tencent.com/g' /etc/apt/sources.list && \
 	sed -i 's/security.ubuntu.com/mirrors.tencent.com/g' /etc/apt/sources.list && \
@@ -21,7 +21,7 @@ RUN apt-get update && \
 	libglu1-mesa \
 	libxi6 libxrender1 libxkbcommon0 \
 	libsm6 libxext6 libxcursor1 libxinerama1 libgl1-mesa-glx \
-	xz-utils htop axel vulkan-tools && \
+	xz-utils htop axel vulkan-tools mesa-utils-extra && \
 	apt-get -y autoremove 
 
 # 安装 code-server 和 vscode 常用插件
