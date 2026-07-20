@@ -8,9 +8,9 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.tencent.com/g' /etc/apt/sources.list &&
 	sed -i 's/cn.archive.ubuntu.com/mirrors.tencent.com/g' /etc/apt/sources.list
 
 # 设置时区
-RUN export DEBIAN_FRONTEND=noninteractive && \
-	# ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
-	echo "Asia/Shanghai" > /etc/timezone
+# RUN export DEBIAN_FRONTEND=noninteractive && \
+# ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+# echo "Asia/Shanghai" > /etc/timezone
 
 ARG BLENDER_MAJOR=4.5
 ARG BLENDER_VERSION=4.5.11
@@ -24,8 +24,12 @@ RUN apt-get update && \
 	libglu1-mesa \
 	libxi6 libxrender1 libxkbcommon0 \
 	libsm6 libxext6 libxcursor1 libxinerama1 libgl1-mesa-dev libgl1-mesa-glx libgl1-mesa-dri libegl1 \
-	xz-utils xvfb htop axel vulkan-tools libvulkan1 libvulkan-dev mesa-vulkan-drivers mesa-utils-extra && \
-	apt-get -y autoremove 
+	xz-utils htop axel vulkan-tools libvulkan1 libvulkan-dev mesa-vulkan-drivers mesa-utils-extra
+
+#VNC环境
+# RUN apt install x11vnc xvfb dbus-x11 kde-standard novnc dbus-x11 && \
+# 	apt-get -y autoremove 
+# ENV VNC_PASSWORD cnb666
 
 # Vulkan 相关环境变量
 ENV VK_ICD_FILENAMES=/etc/vulkan/icd.d/nvidia_icd.json
@@ -53,18 +57,22 @@ RUN wget --quiet ${BLENDER_TAR_URL} -O blender.tar.xz && \
 	tar -xvf blender.tar.xz -C /usr/local/blender --strip-components=1 && \
 	rm blender.tar.xz
 
-# WORKDIR /usr/local/flamenco
-
-# COPY config/flamenco-manager.yaml /usr/local/flamenco/flamenco-manager.yaml
+WORKDIR /usr/local/flamenco
 
 # 安装flamenco
-# RUN wget --quiet https://flamenco.blender.org/downloads/flamenco-3.9.2-linux-amd64.tar.gz -O flamenco.tar.gz &&\
-# 	tar -xzf flamenco.tar.gz -C /usr/local/flamenco --strip-components=1 && \
-# 	chmod +x ./flamenco-manager ./flamenco-worker && \
-# 	rm flamenco.tar.gz
-# RUN ln -s /usr/local/blender/blender /usr/local/bin/blender && \
-# 	ln -s /usr/local/flamenco/flamenco-manager /usr/local/bin/flamenco-manager && \
-# 	ln -s /usr/local/flamenco/flamenco-worker /usr/local/bin/flamenco-worker
+RUN wget --quiet https://flamenco.blender.org/downloads/flamenco-3.9.2-linux-amd64.tar.gz -O flamenco.tar.gz &&\
+	tar -xzf flamenco.tar.gz -C /usr/local/flamenco --strip-components=1 && \
+	chmod +x ./flamenco-manager ./flamenco-worker && \
+	rm flamenco.tar.gz
+RUN ln -s /usr/local/blender/blender /usr/local/bin/blender && \
+	ln -s /usr/local/flamenco/flamenco-manager /usr/local/bin/flamenco-manager && \
+	ln -s /usr/local/flamenco/flamenco-worker /usr/local/bin/flamenco-worker
+
+# 暴露VNC端口
+# EXPOSE 5900
+# EXPOSE 80
+# EXPOSE 6000
+# ENV DISPLAY=:0
 
 
 ENTRYPOINT ["/bin/bash"]

@@ -1,18 +1,17 @@
 master:
   vscode:
     - docker:
-        # build:
-        # dockerfile: .ide/Dockerfile
-        # by:
-        # - config/flamenco-manager.yaml
-        image: docker.cnb.cool/arsrna/blender-docker/blender:4.5.11
+        build: .ide/Dockerfile
       runner:
-        tags: cnb:arch:amd64:gpu:H20
+        tags: cnb:arch:amd64:gpu
       services:
         - vscode
         - docker
       env:
         CNB_WELCOME_CMD: "./start.sh"
+      stages:
+        - name: 配置文件
+          script: config/flamenco-manager.yaml /usr/local/flamenco/flamenco-manager.yaml
 
   tag_push:
     - services:
