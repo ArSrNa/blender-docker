@@ -9,9 +9,6 @@ master:
         - docker
       env:
         CNB_WELCOME_CMD: "./start.sh"
-      stages:
-        - name: 配置文件
-          script: cp config/flamenco-manager.yaml /usr/local/flamenco/flamenco-manager.yaml
 
   tag_push:
     - services:
