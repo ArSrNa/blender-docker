@@ -28,7 +28,6 @@ RUN apt-get update && \
 
 #VNC环境
 # RUN apt install x11vnc xvfb dbus-x11 kde-standard novnc dbus-x11 && \
-# 	apt-get -y autoremove 
 # ENV VNC_PASSWORD cnb666
 
 # Vulkan 相关环境变量
