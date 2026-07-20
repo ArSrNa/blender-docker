@@ -2,9 +2,9 @@ master:
   vscode:
     - docker:
         # build:
-          # dockerfile: .ide/Dockerfile
-          # by:
-            # - config/flamenco-manager.yaml
+        # dockerfile: .ide/Dockerfile
+        # by:
+        # - config/flamenco-manager.yaml
         image: docker.cnb.cool/arsrna/blender-docker/blender:4.5.11
       runner:
         tags: cnb:arch:amd64:gpu:H20
@@ -12,7 +12,7 @@ master:
         - vscode
         - docker
       env:
-        CNB_WELCOME_CMD: "start.sh"
+        CNB_WELCOME_CMD: "./start.sh"
 
   tag_push:
     - services:
@@ -29,3 +29,14 @@ master:
             -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}/blender:${BLENDER_VERSION} .
         - name: docker push
           script: docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}/blender:${BLENDER_VERSION}
+
+$:
+  vscode:
+    - docker:
+        build: .ide/Dockerfile
+        # image: docker.cnb.cool/arsrna/blender-docker/blender:4.5.11
+      runner:
+        tags: cnb:arch:amd64:gpu
+      services:
+        - vscode
+        - docker

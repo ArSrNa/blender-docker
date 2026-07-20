@@ -1,5 +1,7 @@
 # FROM nvidia/cudagl:11.4.2-base-ubuntu20.04
-FROM docker.cnb.cool/examples/language/cuda-12.4
+# FROM docker.cnb.cool/examples/language/cuda-12.4
+FROM nvcr.io/nvidia/cuda:12.4.0-runtime-ubuntu22.04
+
 # 修改镜像源
 RUN sed -i 's/archive.ubuntu.com/mirrors.tencent.com/g' /etc/apt/sources.list && \
 	sed -i 's/security.ubuntu.com/mirrors.tencent.com/g' /etc/apt/sources.list && \
@@ -14,15 +16,21 @@ ARG BLENDER_MAJOR=4.5
 ARG BLENDER_VERSION=4.5.11
 ENV BLENDER_TAR_URL https://mirrors.aliyun.com/blender/release/Blender${BLENDER_MAJOR}/blender-${BLENDER_VERSION}-linux-x64.tar.xz
 
+# 4.5以上需要Vulkan
 RUN apt-get update && \
 	apt-get install -y \
 	curl wget nano git git-lfs unzip openssh-server \
-	bzip2 libfreetype6 libgl1-mesa-dev \
+	bzip2 libfreetype6 \
 	libglu1-mesa \
 	libxi6 libxrender1 libxkbcommon0 \
-	libsm6 libxext6 libxcursor1 libxinerama1 libgl1-mesa-glx \
-	xz-utils htop axel vulkan-tools mesa-utils-extra && \
+	libsm6 libxext6 libxcursor1 libxinerama1 libgl1-mesa-dev libgl1-mesa-glx libgl1-mesa-dri libegl1 \
+	xz-utils xvfb htop axel vulkan-tools libvulkan1 libvulkan-dev mesa-vulkan-drivers mesa-utils-extra && \
 	apt-get -y autoremove 
+
+# Vulkan 相关环境变量
+ENV VK_ICD_FILENAMES=/etc/vulkan/icd.d/nvidia_icd.json
+ENV VK_LAYER_PATH=/usr/share/vulkan/explicit_layer.d
+ENV VK_INSTANCE_LAYERS=VK_LAYER_KHRONOS_validation
 
 # 安装 code-server 和 vscode 常用插件
 RUN curl -fsSL https://code-server.dev/install.sh | sh \
@@ -45,16 +53,18 @@ RUN wget --quiet ${BLENDER_TAR_URL} -O blender.tar.xz && \
 	tar -xvf blender.tar.xz -C /usr/local/blender --strip-components=1 && \
 	rm blender.tar.xz
 
-WORKDIR /usr/local/flamenco
-COPY config/flamenco-manager.yaml /usr/local/flamenco/flamenco-manager.yaml
+# WORKDIR /usr/local/flamenco
+
+# COPY config/flamenco-manager.yaml /usr/local/flamenco/flamenco-manager.yaml
+
 # 安装flamenco
-RUN wget --quiet https://flamenco.blender.org/downloads/flamenco-3.9.2-linux-amd64.tar.gz -O flamenco.tar.gz &&\
-	tar -xzf flamenco.tar.gz -C /usr/local/flamenco --strip-components=1 && \
-	chmod +x ./flamenco-manager ./flamenco-worker && \
-	rm flamenco.tar.gz
-RUN ln -s /usr/local/blender/blender /usr/local/bin/blender && \
-	ln -s /usr/local/flamenco/flamenco-manager /usr/local/bin/flamenco-manager && \
-	ln -s /usr/local/flamenco/flamenco-worker /usr/local/bin/flamenco-worker
+# RUN wget --quiet https://flamenco.blender.org/downloads/flamenco-3.9.2-linux-amd64.tar.gz -O flamenco.tar.gz &&\
+# 	tar -xzf flamenco.tar.gz -C /usr/local/flamenco --strip-components=1 && \
+# 	chmod +x ./flamenco-manager ./flamenco-worker && \
+# 	rm flamenco.tar.gz
+# RUN ln -s /usr/local/blender/blender /usr/local/bin/blender && \
+# 	ln -s /usr/local/flamenco/flamenco-manager /usr/local/bin/flamenco-manager && \
+# 	ln -s /usr/local/flamenco/flamenco-worker /usr/local/bin/flamenco-worker
 
 
 ENTRYPOINT ["/bin/bash"]
