@@ -4,6 +4,25 @@
 
 Blender版本为4.5.11，如需修改，请参考`.ide/Dockerfile`
 
+# 已知问题（非常重要）
+
+由于Blender4开始，Eevee渲染器使用了EGL，`glxinfo -B`、`vulkaninfo`最后得出的结论都是LLVMpipe，并不支持GPU加速，各种驱动已经尝试，经过91小时的折腾，各种驱动，各种镜像安装反复尝试，什么Workbuddy，Codebuddy各种buddy；OpenCode，ClaudeCode各种code；hy3，deepseek v4 pro，kimi 3各种2345模型；Fable5肥波痩波、五花波、曼波、半肥半瘦肥瘦相间波、正弦波余弦波方波锯齿波三角波各种波都跑过了，均无法解决。
+
+最后AI给出的结论是：
+
+- 标准 K8s 云容器、serverless、限制型 Docker：禁止挂载 /dev/dri、禁止 --privileged、无法访问显卡 DRM 设备节点；
+- NVIDIA_DRIVER_CAPABILITIES=graphics 依赖 /dev/dri 才能暴露硬件 EGL/Vulkan，拿不到节点就只能 Mesa 软渲染 llvmpipe；
+
+所以，**最直接，最不绕弯，最根本的解决办法是：不使用Eevee渲染器，而是Cycles**
+
+经过测试，L40支持CUDA渲染，但不支持OptiX光线追踪。以下是使用Cycles CUDA渲染CLI（workspace目录下有个test.blend）：
+
+````bash
+blender -b test.blend -E CYCLES -f 1 -- --cycles-device CUDA
+````
+
+更多参数参考：https://docs.blender.org/manual/zh-hans/latest/advanced/command_line/arguments.html
+
 # Flamenco使用（推荐）
 
 点击最大的云原生开发按钮，进入环境
@@ -66,18 +85,11 @@ Job Type一定要选择`Simple Blender Render`，然后设置帧数，把链接�
 ````
 
 
-# 接入ArRM集群渲染使用（弃用）
+# 接入ArRM集群渲染使用（不兼容，弃用）
 
 ## 下载控制端（已默认下载）
 
 请前往 [https://www.arsrna.cn/app/render/](https://www.arsrna.cn/app/render/)，根据系统类型下载对应控制端
-
-目前本项目已经配置有了
-
-- 集群渲染控制端 `./arrm/arrm_control`，并已完成配置
-- 集群渲染从机端 `arrm_server`
-
-可以直接从cnb同时启动实现webui控制渲染的效果
 
 ## 启动
 已经在cnb中设置了启动自动打开的脚本，如果还未运行，请手动运行下列命令：
@@ -92,14 +104,10 @@ cd arrm
 在PORT中，映射`4625`端口打开控制端，`3000`（默认）端口打开从机端，或根据`config.yaml`配置文件中的`port`进行修改。
 ![端口映射](image/port.png)
 
-## ArRM使用教程
-
-没写完，等会
-
 
 # 渲染脚本设置
 
-要注意，由于我使用了mmd插件，导致摄像机视角有问题，透视变成了正交，所以加入了一句**强行让视角转为透视**，如果没有出现问题，或者摄像机本身就是正交视角的，请注释这一部分。
+要注意，由于我的项目使用了mmd插件，导致摄像机视角有问题，透视变成了正交，所以加入了一句**强行让视角转为透视**，如果没有出现问题，或者摄像机本身就是正交视角的，请注释这一部分。
 
 ````python
 for obj in bpy.data.objects:
@@ -115,6 +123,7 @@ for obj in bpy.data.objects:
 
 # 已知问题
 - [√] 使用mmd插件进行制作的摄像机，会自动变为正交视角，导致渲染结果不一致（4.0以后不会出现）
+- [] 4.2以后，Eevee渲染器无法正常调用GPU渲染，已知是CNB平台没有开放/dev和权限导致EGL的问题，且暂时无法修复。
 
 # 一些话
 
