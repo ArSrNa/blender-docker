@@ -1,7 +1,10 @@
 master:
   vscode:
     - docker:
-        build: .ide/Dockerfile
+        build:
+          dockerfile: .ide/Dockerfile
+          by:
+            - config/flamenco-manager.yaml
         # image: docker.cnb.cool/arsrna/blender-docker/blender:4.5.11
       runner:
         tags: cnb:arch:amd64:gpu:H20
