@@ -36,3 +36,6 @@ $:
       services:
         - vscode
         - docker
+      stages:
+        - name: setup GPU
+          script: bash .ide/nvidia-graphics-setup.sh

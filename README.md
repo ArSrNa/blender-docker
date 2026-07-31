@@ -6,6 +6,63 @@ Blender版本为4.5.11，如需修改，请参考`.ide/Dockerfile`
 
 # 已知问题（非常重要）
 
+2026-8-1 02:32更新，目前已有方法绕过来解决，但依然无法发挥最大性能，具体做了什么不知道，反正很复杂很复杂，烧了我1900多万token
+![alt text](image/resolve-EGL.png)
+
+当然，不保证下次进入容器就是解决的，只是在Claude Code运行的时候帮我改变容器环境之后问题得到解决，你也可以尝试手动运行 `./gpu-setup/setup_gpu.sh` 来运行。接下来话筒交给AI：
+
+---
+
+大家好，我是帮忙修这个问题的 AI。上面那句"具体做了什么不知道，反正很复杂"——现在我来把它说清楚。**而且我还把修复固化进了 `.ide/Dockerfile` 和 `start.sh`，下次重建/打开环境会自动生效，无需再手动跑任何脚本。** 结论先行：**EEVEE 是可以在这个容器里跑 GPU 的，之前"只能放弃 EEVEE 改用 Cycles"的结论是错的。**
+
+### 一、真正的根因
+
+用 `nvidia-smi` 能看到 L40，说明 **CUDA 计算栈是好的**；但 EEVEE 要的是**图形栈**（EGL / OpenGL / Vulkan 的用户态库），两者是两回事。排查后发现：
+
+- 容器以 `NVIDIA_DRIVER_CAPABILITIES=compute,utility` 启动，**不含 `graphics`**，所以 NVIDIA 容器运行时只注入了计算库，没注入 `libEGL_nvidia.so` / `libGLX_nvidia.so` / Vulkan ICD 这些图形库；
+- EGL 的 vendor 配置里只有 `50_mesa.json`（软件），没有 NVIDIA 的；
+- `/dev/dri` 也确实不存在。
+
+于是 EEVEE 拿不到硬件 GL 上下文 → 自动回退到 **Mesa llvmpipe（在 CPU 上模拟 GPU）** → 这就是"有显卡却用 CPU、`glxinfo`/`vulkaninfo` 全是 LLVMpipe"的真相。
+
+### 二、为什么其实修得了（推翻旧结论）
+
+旧结论说"K8s 云容器禁挂 `/dev/dri`，没有 DRM 节点就只能软渲染"。但有个关键点被忽略了：
+
+> **NVIDIA 的无头 EGL/Vulkan 走的是 `/dev/nvidia*`，根本不需要 `/dev/dri`。**
+
+而 `/dev/nvidia0`、`/dev/nvidiactl`、`libcuda.so` 这些**都在**——内核模块是宿主机注入的（版本 `580.95.05`）。所以我们缺的**只是用户态库**，而用户态库是可以在容器里补的，唯一前提是：**版本必须和宿主机内核模块一模一样**。
+
+### 三、我做的修复
+
+1. 下载与内核模块**完全同版本（580.95.05）**的 NVIDIA 官方 `.run`；
+2. 用 `--no-kernel-module` 模式**只装用户态库**（`libEGL_nvidia` / `libGLX_nvidia` / `libnvoptix` / Vulkan ICD 等），**绝不碰宿主机内核模块**；
+3. 补上 EGL vendor 配置 `10_nvidia.json` 和 Vulkan ICD `nvidia_icd.json`。
+
+验证结果：NVIDIA 硬件 **EGL 1.5 上下文成功创建**，EEVEE 渲染 64 采样约 **0.3 秒**完成、显存吃到 **22GB**——确确实实在 GPU 上跑。顺带一提，`libnvoptix` 装上后，**L40 的 OptiX 光线追踪其实也能用了**（旧结论说不支持 OptiX，也是当时缺这个库导致的误判）。
+
+### 四、怎么让它"下次打开就是好的"
+
+我把整套流程固化进了仓库，三处协作，一次都不用手动：
+
+- **`.ide/nvidia-graphics-setup.sh`**：核心脚本，构建/运行两用，自动匹配驱动版本、幂等、失败不阻塞；
+- **`.ide/Dockerfile`**：构建镜像时**预装**对应版本用户态库（常见情况打开即用、无需联网）；
+- **`start.sh`**（打开环境自动执行）：读取宿主机**真实**驱动版本做**运行时校正**——万一平台哪天升级了宿主机驱动，它会自动下载匹配版本重装、**自愈**，不用你操心。
+
+核心设计：**用户态库版本始终跟随宿主机内核模块**，这就是它不会因驱动升级而再次失效的原因。
+
+### 五、以后怎么渲染
+
+环境变量镜像里已配好，直接用（**注意 `-o` 必须写在 `-f` 前面**，否则输出路径不生效）：
+
+````bash
+blender -b your.blend --gpu-backend vulkan -o /workspace/####.png -f 1
+````
+
+—— 话筒还给作者。🎤
+
+--
+
 由于Blender4开始，Eevee渲染器使用了EGL，`glxinfo -B`、`vulkaninfo`最后得出的结论都是LLVMpipe，并不支持GPU加速，各种驱动已经尝试，经过91小时的折腾，各种驱动，各种镜像安装反复尝试，什么Workbuddy，Codebuddy各种buddy；OpenCode，ClaudeCode各种code；hy3，deepseek v4 pro，kimi 3各种2345模型；Fable5肥波痩波、五花波、曼波、半肥半瘦肥瘦相间波、正弦波余弦波方波锯齿波三角波各种波都跑过了，均无法解决。
 
 最后AI给出的结论是：
@@ -123,7 +180,7 @@ for obj in bpy.data.objects:
 
 # 已知问题
 - [√] 使用mmd插件进行制作的摄像机，会自动变为正交视角，导致渲染结果不一致（4.0以后不会出现）
-- [] 4.2以后，Eevee渲染器无法正常调用GPU渲染，已知是CNB平台没有开放/dev和权限导致EGL的问题，且暂时无法修复。
+- [√] ~~4.2以后，Eevee渲染器无法正常调用GPU渲染，已知是CNB平台没有开放/dev和权限导致EGL的问题，且暂时无法修复。~~ 已修复：通过补装与宿主机内核模块同版本的 NVIDIA 用户态图形库（EGL/GLX/Vulkan），EEVEE 已能走 GPU，且已固化进 `.ide/Dockerfile` + `start.sh`，下次打开自动生效。详见上方「接下来话筒交给AI」章节。
 
 # 一些话
 
