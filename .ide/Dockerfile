@@ -24,6 +24,7 @@ RUN apt-get update && \
 	libglu1-mesa \
 	libxi6 libxrender1 libxkbcommon0 \
 	libsm6 libxext6 libxcursor1 libxinerama1 libgl1-mesa-dev libgl1-mesa-glx libgl1-mesa-dri libegl1 \
+	libglvnd0 libglx0 kmod \
 	xz-utils htop axel vulkan-tools libvulkan1 libvulkan-dev mesa-vulkan-drivers mesa-utils-extra
 
 #VNC环境
@@ -34,6 +35,16 @@ RUN apt-get update && \
 ENV VK_ICD_FILENAMES=/etc/vulkan/icd.d/nvidia_icd.json
 ENV VK_LAYER_PATH=/usr/share/vulkan/explicit_layer.d
 ENV VK_INSTANCE_LAYERS=VK_LAYER_KHRONOS_validation
+# 无头 EGL 需要一个可写的 XDG_RUNTIME_DIR
+ENV XDG_RUNTIME_DIR=/tmp/xdg
+
+# ---------------------------------------------------------------------------
+# NVIDIA 用户态图形栈（EGL/GLX/Vulkan/OptiX）——让无头 EEVEE 走 GPU 而非 CPU。
+# 基础镜像 cuda:*-runtime 只带计算栈，缺图形用户态库；且用户态库版本必须与宿主机
+# 内核模块精确匹配。构建阶段既没有 GPU、也读不到宿主机真实驱动版本，因此这里【不】
+# 在镜像里安装，只准备好依赖（kmod / libglvnd0 / libglx0 及上方 ENV）。
+# 真正的安装改为【运行时】执行：由 .cnb.yml 的 "setup GPU" 阶段（以及 start.sh）
+# 调用仓库内的 .ide/nvidia-graphics-setup.sh，按宿主机真实驱动版本自动匹配安装/自愈。
 
 # 安装 code-server 和 vscode 常用插件
 RUN curl -fsSL https://code-server.dev/install.sh | sh \
