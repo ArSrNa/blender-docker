@@ -1,4 +1,4 @@
-master:
+$:
   vscode:
     - docker:
         build: .ide/Dockerfile
@@ -9,7 +9,11 @@ master:
         - docker
       env:
         CNB_WELCOME_CMD: "./start.sh"
+      stages:
+        - name: setup GPU
+          script: bash .ide/nvidia-graphics-setup.sh
 
+master:
   tag_push:
     - services:
         - docker
@@ -25,17 +29,3 @@ master:
             -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}/blender:${BLENDER_VERSION} .
         - name: docker push
           script: docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}/blender:${BLENDER_VERSION}
-
-$:
-  vscode:
-    - docker:
-        build: .ide/Dockerfile
-        # image: docker.cnb.cool/arsrna/blender-docker/blender:4.5.11
-      runner:
-        tags: cnb:arch:amd64:gpu
-      services:
-        - vscode
-        - docker
-      stages:
-        - name: setup GPU
-          script: bash .ide/nvidia-graphics-setup.sh
