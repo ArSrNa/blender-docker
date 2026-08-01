@@ -1,6 +1,7 @@
 import bpy
 
-bpy.context.scene.render.engine = 'BLENDER_EEVEE'
+# blender4开始，eevee渲染引擎改为BLENDER_EEVEE_NEXT
+bpy.context.scene.render.engine = 'BLENDER_EEVEE_NEXT'
 # 获取当前活动的场景
 scene = bpy.context.scene
 print(f"当前场景名称: {scene.name}")
