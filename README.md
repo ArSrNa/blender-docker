@@ -6,18 +6,20 @@ Blender版本为4.5.11，如需修改，请参考`.ide/Dockerfile`
 
 # 已知问题（非常重要）
 
+由于Blender4开始，Eevee渲染器使用了EGL，`glxinfo -B`、`vulkaninfo`最后得出的结论都是LLVMpipe，并不支持GPU加速，各种驱动已经尝试，经过91小时的折腾，各种驱动，各种镜像安装反复尝试，什么Workbuddy，Codebuddy各种buddy；OpenCode，ClaudeCode各种code；hy3，deepseek v4 pro，kimi 3各种2345模型；Fable5肥波痩波、五花波、曼波、半肥半瘦肥瘦相间波、正弦波余弦波方波锯齿波三角波各种波都跑过了，均无法解决。
+
 2026-8-1 02:32更新，目前已有方法绕过来解决，但依然无法发挥最大性能，具体做了什么不知道，反正很复杂很复杂，烧了我1900多万token
 ![alt text](image/resolve-EGL.png)
 
 当然，不保证下次进入容器就是解决的，只是在Claude Code运行的时候帮我改变容器环境之后问题得到解决，你也可以尝试手动运行 `./gpu-setup/setup_gpu.sh` 来运行。
 
-**注意：每次启动环境后，需要预留6.9分钟等待驱动安装**，可以前往云原生构建，然后点开刚刚启动的云原生开发查看日志，如果安装GPU驱动这一个步骤绿色了，就完成了
+**注意：每次启动环境后，需要预留6.9分钟等待驱动安装**，可以前往`云原生构建`，然后点开刚刚启动的`云原生开发`查看日志，如果安装GPU驱动这一个步骤绿色了，就完成了
 
 接下来话筒交给AI：
 
 ---
 
-大家好，我是帮忙修这个问题的 AI。上面那句"具体做了什么不知道，反正很复杂"——现在我来把它说清楚。**而且我还把修复固化进了 `.ide/Dockerfile` 和 `start.sh`，下次重建/打开环境会自动生效，无需再手动跑任何脚本。** 结论先行：**EEVEE 是可以在这个容器里跑 GPU 的，之前"只能放弃 EEVEE 改用 Cycles"的结论是错的。**
+大家好，我是帮忙修这个问题的 AI。上面那句"具体做了什么不知道，反正很复杂"——现在我来把它说清楚。下次重建/打开环境会自动生效，无需再手动跑任何脚本。** 结论先行：**EEVEE 是可以在这个容器里跑 GPU 的，之前"只能放弃 EEVEE 改用 Cycles"的结论是错的。**
 
 ### 真正的根因
 
@@ -42,29 +44,10 @@ Blender版本为4.5.11，如需修改，请参考`.ide/Dockerfile`
 环境变量镜像里已配好，直接用（**注意 `-o` 必须写在 `-f` 前面**，否则输出路径不生效）：
 
 ````bash
-blender -b your.blend --gpu-backend vulkan -o /workspace/####.png -f 1
+blender -b your.blend -o /workspace/####.png -f 1
 ````
 
 —— 话筒还给作者。🎤
-
---
-
-由于Blender4开始，Eevee渲染器使用了EGL，`glxinfo -B`、`vulkaninfo`最后得出的结论都是LLVMpipe，并不支持GPU加速，各种驱动已经尝试，经过91小时的折腾，各种驱动，各种镜像安装反复尝试，什么Workbuddy，Codebuddy各种buddy；OpenCode，ClaudeCode各种code；hy3，deepseek v4 pro，kimi 3各种2345模型；Fable5肥波痩波、五花波、曼波、半肥半瘦肥瘦相间波、正弦波余弦波方波锯齿波三角波各种波都跑过了，均无法解决。
-
-最后AI给出的结论是：
-
-- 标准 K8s 云容器、serverless、限制型 Docker：禁止挂载 /dev/dri、禁止 --privileged、无法访问显卡 DRM 设备节点；
-- NVIDIA_DRIVER_CAPABILITIES=graphics 依赖 /dev/dri 才能暴露硬件 EGL/Vulkan，拿不到节点就只能 Mesa 软渲染 llvmpipe；
-
-所以，**最直接，最不绕弯，最根本的解决办法是：不使用Eevee渲染器，而是Cycles**
-
-经过测试，L40支持CUDA渲染，但不支持OptiX光线追踪。以下是使用Cycles CUDA渲染CLI（workspace目录下有个test.blend）：
-
-````bash
-blender -b test.blend -E CYCLES -f 1 -- --cycles-device CUDA
-````
-
-更多参数参考：https://docs.blender.org/manual/zh-hans/latest/advanced/command_line/arguments.html
 
 # Flamenco使用（推荐）
 
@@ -113,6 +96,8 @@ Job Type一定要选择`Simple Blender Render`，然后设置帧数，把链接�
 点击右上角云原生开发，直接启动
 ![alt text](image/start.png)
 
+**注意：启动完毕后需要等待GPU驱动安装完毕**，可到云原生构建-云原生开发展开日志查看状态。
+
 ## 使用脚本启动
 在打开的code-server内，启动Terminal，默认已经进入到了`/bin/bash`
 
@@ -120,11 +105,29 @@ Job Type一定要选择`Simple Blender Render`，然后设置帧数，把链接�
 
 - 将需要处理的`.blend`文件上传到工作区
 - 修改`eevee_render.py`，请参考下一章节[渲染脚本设置](#渲染脚本设置)
-````shell
-# 使用eevee渲染
-/usr/local/blender/blender -b /workspace/{.blend文件} -P /workspace/eevee_render.py
-# 使用cycles渲染
-/usr/local/blender/blender -b /workspace/{.blend文件} -P /workspace/cycles_render.py
+
+
+### 命令行渲染
+````bash
+# eevee渲染（60-120帧）
+blender -b test.blend -o output/####.png --frame-start 60 --frame-end 120 -a
+# eevee渲染（60-120帧）
+blender -b test.blend -o output/####.png -E CYCLES --frame-start 60 --frame-end 120 -a -- --cycles-device CUDA
+````
+
+````bash
+# eevee渲染（第1帧）
+blender -b test.blend -o output/####.png -f 1
+# eevee渲染（第1帧）
+blender -b test.blend -o output/####.png -E CYCLES -f 1 -- --cycles-device CUDA
+````
+
+### 脚本渲染
+````bash
+# 脚本渲染-eevee
+blender -b /workspace/{.blend文件} -P /workspace/eevee_render.py
+# 脚本渲染-cycles
+blender -b /workspace/{.blend文件} -P /workspace/cycles_render.py
 ````
 
 
