@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//dev/**)",
+      "Bash(nvidia-smi -L)",
+      "Bash(blender --version)",
+      "Read(//tmp/**)",
+      "Bash(wget -q --show-progress -O NVIDIA-580.95.05.run https://download.nvidia.com/XFree86/Linux-x86_64/580.95.05/NVIDIA-Linux-x86_64-580.95.05.run)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(chmod +x /tmp/NVIDIA-580.95.05.run)",
+      "Bash(sh /tmp/NVIDIA-580.95.05.run --version)"
+    ]
+  }
+}

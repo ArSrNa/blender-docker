@@ -33,6 +33,4 @@ public/ArRM
 storage
 flamenco-manager-storage
 
-# NVIDIA 驱动安装器（体积大、运行时按需自动下载，不入库）
-gpu-setup/*.run
 /opt/nvidia-installers/

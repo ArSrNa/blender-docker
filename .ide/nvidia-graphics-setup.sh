@@ -20,7 +20,8 @@ export PATH="$PATH:/usr/sbin:/sbin"
 log()  { printf '\033[1;32m[nvidia-gfx]\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m[nvidia-gfx]\033[0m %s\n' "$*" >&2; }
 
-INSTALLER_DIR="${INSTALLER_DIR:-/opt/nvidia-installers}"
+# INSTALLER_DIR="${INSTALLER_DIR:-/opt/nvidia-installers}"
+INSTALLER_DIR="/workspace/gpu-setup"
 EGL_JSON="/usr/share/glvnd/egl_vendor.d/10_nvidia.json"
 VK_JSON="/etc/vulkan/icd.d/nvidia_icd.json"   # 与 Dockerfile 的 VK_ICD_FILENAMES 保持一致
 
