@@ -65,10 +65,12 @@ fi
 
 # --- 4. 定位或下载与目标版本一致的 .run ------------------------------------
 RUN="$INSTALLER_DIR/NVIDIA-Linux-x86_64-${TARGET}.run"
-if [ ! -f "$RUN" ]; then
+if [ -f "$RUN" ]; then
+  log "使用本地安装器: $RUN"
+else
   mkdir -p "$INSTALLER_DIR"
   URL="https://download.nvidia.com/XFree86/Linux-x86_64/${TARGET}/NVIDIA-Linux-x86_64-${TARGET}.run"
-  log "下载 $URL"
+  log "本地无 $RUN，从 NVIDIA 下载…"
   if ! wget -q -O "$RUN" "$URL"; then
     warn "下载失败，跳过安装（EEVEE 可能回退 CPU）。稍后可手动重跑本脚本。"
     rm -f "$RUN"
