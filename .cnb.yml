@@ -3,7 +3,7 @@ $:
     - docker:
         build: .ide/Dockerfile
       runner:
-        tags: cnb:arch:amd64:gpu
+        tags: cnb:arch:amd64:gpu:H20
       services:
         - vscode
         - docker
