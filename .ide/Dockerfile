@@ -55,6 +55,17 @@ RUN curl -fsSL https://code-server.dev/install.sh | sh \
 	&& code-server --install-extension cnbcool.cnb-welcome \
 	&& code-server --install-extension ms-azuretools.vscode-docker
 
+#安装node
+RUN curl -sL https://deb.nodesource.com/setup_24.x | bash - && \
+	apt-get -y install nodejs
+
+RUN npm i -g bun yarn pnpm bun commitizen --registry https://mirrors.cloud.tencent.com/npm/ --allow-scripts=bun && \
+	pnpm config set registry https://mirrors.cloud.tencent.com/npm/ && \
+	echo "{ \"path\": \"cz-conventional-changelog\" }" > ~/.czrc && \
+	bun i -g @anthropic-ai/claude-code
+RUN echo "export PATH=$PATH:/root/.bun/bin" >> /root/.bashrc
+
+
 # 指定字符集支持命令行输入中文（根据需要选择字符集）
 ENV LANG C.UTF-8
 ENV LANGUAGE C.UTF-8
