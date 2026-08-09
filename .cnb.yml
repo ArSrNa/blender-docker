@@ -1,7 +1,8 @@
 $:
   vscode:
     - docker:
-        build: .ide/Dockerfile
+        # build: .ide/Dockerfile
+        image: docker.cnb.cool/arsrna/blender-docker/blender:4.5.11
       runner:
         tags: cnb:arch:amd64:gpu
       services:
@@ -9,9 +10,21 @@ $:
         - docker
       env:
         CNB_WELCOME_CMD: "./start.sh"
-      stages:
-        - name: setup GPU
-          script: bash .ide/nvidia-graphics-setup.sh
+      # stages:
+      #   - name: setup GPU
+      #     script: bash .ide/nvidia-graphics-setup.sh
+
+demo:
+  vscode:
+    - docker:
+        image: docker.cnb.cool/arsrna/blender-docker/blender:4.5.11-test
+      runner:
+        tags: cnb:arch:amd64:gpu
+      services:
+        - vscode
+        - docker
+      env:
+        CNB_WELCOME_CMD: "./start.sh"
 
 master:
   tag_push:
