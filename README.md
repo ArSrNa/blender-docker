@@ -4,6 +4,8 @@
 
 Blender版本为4.5.11，如需修改，请参考`.ide/Dockerfile`
 
+ArRM及详细参考文档：https://arsrna-it.feishu.cn/docx/CzGYdwx5ooI6pvxmaJQcNrqanud?from=from_copylink
+
 # 已知问题（非常重要）
 
 由于Blender4开始，Eevee渲染器使用了EGL，`glxinfo -B`、`vulkaninfo`最后得出的结论都是LLVMpipe，并不支持GPU加速，各种驱动已经尝试，经过91小时的折腾，各种驱动，各种镜像安装反复尝试，什么Workbuddy，Codebuddy各种buddy；OpenCode，ClaudeCode各种code；hy3，deepseek v4 pro，kimi 3各种2345模型；Fable5肥波痩波、五花波、曼波、半肥半瘦肥瘦相间波、正弦波余弦波方波锯齿波三角波各种波都跑过了，均无法解决。
