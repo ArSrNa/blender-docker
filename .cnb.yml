@@ -39,6 +39,6 @@ master:
             docker build \
             --build-arg BLENDER_MAJOR=${BLENDER_MAJOR} \
             --build-arg BLENDER_VERSION=${BLENDER_VERSION} \
-            -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}/blender:${BLENDER_VERSION} .
+            -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}/blender:${BLENDER_VERSION} -f .ide/Dockerfile .
         - name: docker push
           script: docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}/blender:${BLENDER_VERSION}
