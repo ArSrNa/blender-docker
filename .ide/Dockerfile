@@ -121,4 +121,9 @@ RUN ln -s /usr/local/blender/blender /usr/local/bin/blender && \
 # ENV DISPLAY=:0
 
 
+# 清理越界 UID/GID（如 NVIDIA .run 解包残留的高位 UID，例如 1000031），
+# 统一归为 0:0，避免在开启 userns-remap 的 GPU 节点上触发
+# "failed to register layer: container ID ... cannot be mapped to a host ID"。
+RUN find / -xdev \( -uid 100000 -o -gid 100000 \) -exec chown -h 0:0 {} + 2>/dev/null || true
+
 ENTRYPOINT ["/bin/bash"]
