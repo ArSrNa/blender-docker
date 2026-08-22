@@ -1,13 +1,8 @@
 $:
   vscode:
     - docker:
-        build:
-          dockerfile: .ide/Dockerfile
-          # 将 gpu-setup/ 下的 NVIDIA 驱动安装包纳入构建上下文，
-          # 否则 Dockerfile 中的 COPY gpu-setup/*.run 会因文件不在上下文中而失败
-          by:
-            - gpu-setup/*.run
-        # image: docker.cnb.cool/arsrna/blender-docker/blender:4.5.11
+          # dockerfile: .ide/Dockerfile
+          image: docker.cnb.cool/arsrna/blender-docker/blender:4.5.11
       runner:
         tags: cnb:arch:amd64:gpu
       services:
