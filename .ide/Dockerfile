@@ -14,7 +14,7 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.tencent.com/g' /etc/apt/sources.list &&
 
 ARG BLENDER_MAJOR=4.5
 ARG BLENDER_VERSION=4.5.11
-ENV BLENDER_TAR_URL https://mirrors.aliyun.com/blender/release/Blender${BLENDER_MAJOR}/blender-${BLENDER_VERSION}-linux-x64.tar.xz
+ENV BLENDER_TAR_URL=https://mirrors.aliyun.com/blender/release/Blender${BLENDER_MAJOR}/blender-${BLENDER_VERSION}-linux-x64.tar.xz
 
 # 4.5以上需要Vulkan
 RUN apt-get update && \
@@ -94,8 +94,8 @@ RUN echo "export PATH=$PATH:/root/.bun/bin" >> /root/.bashrc
 
 
 # 指定字符集支持命令行输入中文（根据需要选择字符集）
-ENV LANG C.UTF-8
-ENV LANGUAGE C.UTF-8
+ENV LANG=C.UTF-8
+ENV LANGUAGE=C.UTF-8
 
 # 安装blender
 RUN mkdir -p /usr/local/blender && mkdir -p /usr/local/flamenco
