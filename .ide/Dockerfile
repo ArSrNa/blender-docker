@@ -56,29 +56,31 @@ ENV NVIDIA_DRIVER_VERSION=${NVIDIA_DRIVER_VERSION}
 COPY gpu-setup/NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run /opt/nvidia-installers/NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run
 
 RUN export PATH="$PATH:/usr/sbin:/sbin" && \
-    chmod +x /opt/nvidia-installers/NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run && \
-    sh /opt/nvidia-installers/NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run \
-      --silent \
-      --no-kernel-module --no-kernel-modules \
-      --no-nvidia-modprobe --no-drm \
-      --no-x-check --no-questions \
-      --install-libglvnd --skip-depmod >/tmp/nvidia-install.log 2>&1 || true && \
-    ldconfig && \
-    mkdir -p /usr/share/glvnd/egl_vendor.d /etc/vulkan/icd.d && \
-    printf '%s\n' '{"file_format_version":"1.0.0","ICD":{"library_path":"libEGL_nvidia.so.0"}}' \
-      > /usr/share/glvnd/egl_vendor.d/10_nvidia.json && \
-    printf '%s\n' '{"file_format_version":"1.0.0","ICD":{"library_path":"libGLX_nvidia.so.0","api_version":"1.3.0"}}' \
-      > /etc/vulkan/icd.d/nvidia_icd.json && \
-    rm -f /opt/nvidia-installers/NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run
+	chmod +x /opt/nvidia-installers/NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run && \
+	sh /opt/nvidia-installers/NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run \
+	--silent \
+	--no-kernel-module --no-kernel-modules \
+	--no-nvidia-modprobe --no-drm \
+	--no-x-check --no-questions \
+	--install-libglvnd --skip-depmod >/tmp/nvidia-install.log 2>&1 || true && \
+	ldconfig && \
+	mkdir -p /usr/share/glvnd/egl_vendor.d /etc/vulkan/icd.d && \
+	printf '%s\n' '{"file_format_version":"1.0.0","ICD":{"library_path":"libEGL_nvidia.so.0"}}' \
+	> /usr/share/glvnd/egl_vendor.d/10_nvidia.json && \
+	printf '%s\n' '{"file_format_version":"1.0.0","ICD":{"library_path":"libGLX_nvidia.so.0","api_version":"1.3.0"}}' \
+	> /etc/vulkan/icd.d/nvidia_icd.json && \
+	rm -f /opt/nvidia-installers/NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run
 
 # 安装 code-server 和 vscode 常用插件
-RUN curl -fsSL https://code-server.dev/install.sh | sh \
-	&& code-server --install-extension redhat.vscode-yaml \
-	&& code-server --install-extension dbaeumer.vscode-eslint \
-	&& code-server --install-extension eamodio.gitlens \
-	&& code-server --install-extension tencent-cloud.coding-copilot \
-	&& code-server --install-extension cnbcool.cnb-welcome \
-	&& code-server --install-extension ms-azuretools.vscode-docker
+RUN curl -fsSL https://code-server.dev/install.sh | sh
+
+# 然后安装插件（插件下载也可能慢，可考虑离线安装）
+RUN code-server --install-extension redhat.vscode-yaml && \
+	code-server --install-extension dbaeumer.vscode-eslint && \
+	code-server --install-extension eamodio.gitlens && \
+	code-server --install-extension tencent-cloud.coding-copilot && \
+	code-server --install-extension cnbcool.cnb-welcome && \
+	code-server --install-extension ms-azuretools.vscode-docker
 
 #安装node
 RUN curl -sL https://deb.nodesource.com/setup_24.x | bash - && \
@@ -100,14 +102,14 @@ RUN mkdir -p /usr/local/blender && mkdir -p /usr/local/flamenco
 
 WORKDIR /usr/local/blender
 RUN wget --quiet ${BLENDER_TAR_URL} -O blender.tar.xz && \
-	tar -xvf blender.tar.xz -C /usr/local/blender --strip-components=1 && \
+	tar --no-same-owner -xvf blender.tar.xz -C /usr/local/blender --strip-components=1 && \
 	rm blender.tar.xz
 
 WORKDIR /usr/local/flamenco
 
 # 安装flamenco
 RUN wget --quiet https://flamenco.blender.org/downloads/flamenco-3.9.2-linux-amd64.tar.gz -O flamenco.tar.gz &&\
-	tar -xzf flamenco.tar.gz -C /usr/local/flamenco --strip-components=1 && \
+	tar --no-same-owner -xzf flamenco.tar.gz -C /usr/local/flamenco --strip-components=1 && \
 	chmod +x ./flamenco-manager ./flamenco-worker && \
 	rm flamenco.tar.gz
 RUN ln -s /usr/local/blender/blender /usr/local/bin/blender && \

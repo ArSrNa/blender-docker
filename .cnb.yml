@@ -1,8 +1,8 @@
 $:
   vscode:
     - docker:
-          # dockerfile: .ide/Dockerfile
-          image: docker.cnb.cool/arsrna/blender-docker/blender:4.5.11
+        # dockerfile: .ide/Dockerfile
+        image: docker.cnb.cool/arsrna/blender-docker/blender:4.5.11
       runner:
         tags: cnb:arch:amd64:gpu
       services:
@@ -13,6 +13,22 @@ $:
       # stages:
       #   - name: setup GPU
       #     script: bash .ide/nvidia-graphics-setup.sh
+
+"build/*":
+  vscode:
+    - runner:
+        tags: cnb:arch:amd64:gpu
+      services:
+        - docker
+        - vscode
+
+"test/*":
+  vscode:
+    - runner:
+        cpus: 32
+      services:
+        - docker
+        - vscode
 
 demo:
   vscode:
