@@ -22,6 +22,14 @@ $:
         - docker
         - vscode
 
+"test/*":
+  vscode:
+    - runner:
+        cpus: 32
+      services:
+        - docker
+        - vscode
+
 demo:
   vscode:
     - docker:
