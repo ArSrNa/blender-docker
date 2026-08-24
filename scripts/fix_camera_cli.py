@@ -2,7 +2,7 @@
 Blender CLI 渲染前的相机修复脚本
 
 用法:
-  blender -b your_file.blend --python fix_camera_cli.py -o output/60-100/####.png -s 60 -e 120 -a
+  blender -b your_file.blend --python scripts/fix_camera_cli.py -o output/60-100/####.png -s 60 -e 120 -a
 
 功能:
   1. 确保场景有活跃相机

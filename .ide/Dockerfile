@@ -19,7 +19,7 @@ ENV BLENDER_TAR_URL=https://mirrors.aliyun.com/blender/release/Blender${BLENDER_
 # 4.5以上需要Vulkan
 RUN apt-get update && \
 	apt-get install -y \
-	curl wget nano git git-lfs unzip openssh-server \
+	curl wget nano git git-lfs unzip openssh-server ffmpeg \
 	bzip2 libfreetype6 \
 	libglu1-mesa \
 	libxi6 libxrender1 libxkbcommon0 \
