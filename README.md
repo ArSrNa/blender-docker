@@ -17,41 +17,38 @@ ArRM及详细参考文档：https://arsrna-it.feishu.cn/docx/CzGYdwx5ooI6pvxmaJQ
 
 **注意：每次启动环境后，需要预留6.9分钟等待驱动安装**，可以前往`云原生构建`，然后点开刚刚启动的`云原生开发`查看日志，如果安装GPU驱动这一个步骤绿色了，就完成了
 
-接下来话筒交给AI：
 
----
+# 接入ArRM集群渲染使用
 
-大家好，我是帮忙修这个问题的 AI。上面那句"具体做了什么不知道，反正很复杂"——现在我来把它说清楚。下次重建/打开环境会自动生效，无需再手动跑任何脚本。** 结论先行：**EEVEE 是可以在这个容器里跑 GPU 的，之前"只能放弃 EEVEE 改用 Cycles"的结论是错的。**
+## 下载控制端（已默认下载）
 
-### 真正的根因
+请前往 https://www.arsrna.cn/app/render#download，根据系统类型下载对应控制端
 
-用 `nvidia-smi` 能看到 L40，说明 **CUDA 计算栈是好的**；但 EEVEE 要的是**图形栈**（EGL / OpenGL / Vulkan 的用户态库），两者是两回事。排查后发现：
+## 启动
 
-- 容器以 `NVIDIA_DRIVER_CAPABILITIES=compute,utility` 启动，**不含 `graphics`**，所以 NVIDIA 容器运行时只注入了计算库，没注入 `libEGL_nvidia.so` / `libGLX_nvidia.so` / Vulkan ICD 这些图形库；
-- EGL 的 vendor 配置里只有 `50_mesa.json`（软件），没有 NVIDIA 的；
-- `/dev/dri` 也确实不存在。
+自动运行：
+```bash
+./start-arrm.sh
+```
 
-于是 EEVEE 拿不到硬件 GL 上下文 → 自动回退到 **Mesa llvmpipe（在 CPU 上模拟 GPU）** → 这就是"有显卡却用 CPU、`glxinfo`/`vulkaninfo` 全是 LLVMpipe"的真相。
+或者手动分别运行下列命令
+```bash
+cd arrm
+# 启动控制端
+./arrm/arrm_control-linux &
+# 启动从机端
+./arrm/arrm_slave_linux &
+```
 
-### 我做的修复
+在PORT中，映射`4625`端口打开控制端，`3000`（默认）端口打开从机端，或根据`config.yaml`配置文件中的`port`进行修改。
+![端口映射](image/port.png)
 
-1. 下载与内核模块**完全同版本（580.95.05）**的 NVIDIA 官方 `.run`；
-2. 用 `--no-kernel-module` 模式**只装用户态库**（`libEGL_nvidia` / `libGLX_nvidia` / `libnvoptix` / Vulkan ICD 等），**绝不碰宿主机内核模块**；
-3. 补上 EGL vendor 配置 `10_nvidia.json` 和 Vulkan ICD `nvidia_icd.json`。
+具体使用方法参考：
 
-验证结果：NVIDIA 硬件 **EGL 1.5 上下文成功创建**，EEVEE 渲染 64 采样约 **0.3 秒**完成、显存吃到 **22GB**——确确实实在 GPU 上跑。顺带一提，`libnvoptix` 装上后，**L40 的 OptiX 光线追踪其实也能用了**（旧结论说不支持 OptiX，也是当时缺这个库导致的误判）。
+- ArRM及详细参考文档：https://arsrna-it.feishu.cn/docx/CzGYdwx5ooI6pvxmaJQcNrqanud?from=from_copylink
 
-### 以后怎么渲染
 
-环境变量镜像里已配好，直接用（**注意 `-o` 必须写在 `-f` 前面**，否则输出路径不生效）：
-
-````bash
-blender -b your.blend -o /workspace/####.png -f 1
-````
-
-—— 话筒还给作者。🎤
-
-# Flamenco使用（推荐）
+# Flamenco使用
 
 点击最大的云原生开发按钮，进入环境
 
@@ -131,27 +128,6 @@ blender -b /workspace/{.blend文件} -P /workspace/eevee_render.py
 # 脚本渲染-cycles
 blender -b /workspace/{.blend文件} -P /workspace/cycles_render.py
 ````
-
-
-# 接入ArRM集群渲染使用（不兼容，弃用）
-
-## 下载控制端（已默认下载）
-
-请前往 [https://www.arsrna.cn/app/render/](https://www.arsrna.cn/app/render/)，根据系统类型下载对应控制端
-
-## 启动
-已经在cnb中设置了启动自动打开的脚本，如果还未运行，请手动运行下列命令：
-```bash
-cd arrm
-# 启动控制端
-./arrm_control
-# 启动从机端
-./arrm_server
-```
-
-在PORT中，映射`4625`端口打开控制端，`3000`（默认）端口打开从机端，或根据`config.yaml`配置文件中的`port`进行修改。
-![端口映射](image/port.png)
-
 
 # 渲染脚本设置
 
