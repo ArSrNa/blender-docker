@@ -100,14 +100,14 @@ RUN mkdir -p /usr/local/blender && mkdir -p /usr/local/flamenco
 
 WORKDIR /usr/local/blender
 RUN wget --quiet ${BLENDER_TAR_URL} -O blender.tar.xz && \
-	tar -xvf blender.tar.xz -C /usr/local/blender --strip-components=1 && \
+	tar --no-same-owner -xvf blender.tar.xz -C /usr/local/blender --strip-components=1 && \
 	rm blender.tar.xz
 
 WORKDIR /usr/local/flamenco
 
 # 安装flamenco
 RUN wget --quiet https://flamenco.blender.org/downloads/flamenco-3.9.2-linux-amd64.tar.gz -O flamenco.tar.gz &&\
-	tar -xzf flamenco.tar.gz -C /usr/local/flamenco --strip-components=1 && \
+	tar --no-same-owner -xzf flamenco.tar.gz -C /usr/local/flamenco --strip-components=1 && \
 	chmod +x ./flamenco-manager ./flamenco-worker && \
 	rm flamenco.tar.gz
 RUN ln -s /usr/local/blender/blender /usr/local/bin/blender && \
