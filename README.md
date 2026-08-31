@@ -22,7 +22,7 @@ ArRM及详细参考文档：https://arsrna-it.feishu.cn/docx/CzGYdwx5ooI6pvxmaJQ
 
 ## 下载控制端（已默认下载）
 
-请前往 https://www.arsrna.cn/app/render#download，根据系统类型下载对应控制端
+请前往 [https://www.arsrna.cn/app/render#download](https://www.arsrna.cn/app/render#download)，根据系统类型下载对应控制端
 
 ## 启动
 
