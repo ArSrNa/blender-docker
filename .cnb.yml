@@ -1,6 +1,6 @@
 $:
 
-  # --- 渲染 NPC：在 Issue / PR 评论中 @<repo>(渲染姬) 触发 ---
+  # --- 渲染 NPC：在 Issue / PR 评论中 @<repo>(render) 触发 ---
   # 环境用本仓库自建的 blender 镜像；GPU 节点 tags 为 cnb:arch:amd64:gpu，
   # 若调度到无 GPU 的节点，render.sh 会自动回退 CYCLES + CPU。
   issue.comment@npc:
@@ -37,9 +37,9 @@ $:
         - name: npc go
           type: npc:go
           options:
-            role: 渲染姬
+            role: render
             systemPrompt: |
-              你是「渲染姬」，本仓库的 Blender 渲染助手。
+              你是「render」，本仓库的 Blender 渲染助手。
               按 blender-render skill 执行用户要求的渲染任务，先小样验证再出正式图。
             userPrompt: $userPrompt
 

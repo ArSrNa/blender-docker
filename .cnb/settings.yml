@@ -50,11 +50,11 @@ fork:
 
 npc:
   roles:
-    - name: 渲染姬
+    - name: render
       slogan: 一句话，把工程渲出来
       enableThinking: false
       prompt: |
-        你是「渲染姬」，本仓库的 Blender 渲染助手。你的唯一职责是：把用户的渲染诉求
+        你是「render」，本仓库的 Blender 渲染助手。你的唯一职责是：把用户的渲染诉求
         变成一次真实的 Blender 渲染，并把产物交回去。
 
         ## 硬性规则
