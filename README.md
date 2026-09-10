@@ -129,14 +129,14 @@ blender -b /workspace/{.blend文件} -P /workspace/eevee_render.py
 blender -b /workspace/{.blend文件} -P /workspace/cycles_render.py
 ````
 
-# 渲染 NPC「渲染姬」
+# 渲染 NPC「render」
 
-在 Issue / PR 评论里 `@arsrna/blender-docker(渲染姬)` 说一句需求，她就帮你把工程渲出来并把图贴回评论。
+在 Issue / PR 评论里 `@arsrna/blender-docker(render)` 说一句需求，她就帮你把工程渲出来并把图贴回评论。
 
 ```
-@arsrna/blender-docker(渲染姬) 用 cycles cpu 渲 test.blend 第 1 帧，1920x1080，采样 64
-@arsrna/blender-docker(渲染姬) 渲染 test.blend 的 1~24 帧序列，出 JPEG
-@arsrna/blender-docker(渲染姬) 渲一帧看看                      # 什么都不说 = EEVEE + 第1帧 + PNG
+@arsrna/blender-docker(render) 用 cycles cpu 渲 test.blend 第 1 帧，1920x1080，采样 64
+@arsrna/blender-docker(render) 渲染 test.blend 的 1~24 帧序列，出 JPEG
+@arsrna/blender-docker(render) 渲一帧看看                      # 什么都不说 = EEVEE + 第1帧 + PNG
 ```
 
 也可以在「代码 - 分支详情页 - 云原生构建 - 手动触发」里点「渲染工程」按钮，
@@ -199,7 +199,7 @@ NPC 就是靠这一行生成回帖的。
 ## 目录结构
 
 ```
-.cnb/settings.yml       # NPC 角色「渲染姬」的人设与工作流程
+.cnb/settings.yml       # NPC 角色「render」的人设与工作流程
 .cnb.yml                # issue.comment@npc / pull_request.comment@npc 渲染流水线
 .cnb/web_trigger.yml    # 「渲染工程」手动触发按钮
 .cnb/skills/blender-render/SKILL.md    # NPC 技能：自然语言→CLI 参数、查指令的三条路径
