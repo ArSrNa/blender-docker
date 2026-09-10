@@ -129,6 +129,96 @@ blender -b /workspace/{.blend文件} -P /workspace/eevee_render.py
 blender -b /workspace/{.blend文件} -P /workspace/cycles_render.py
 ````
 
+# 渲染 NPC「渲染姬」
+
+在 Issue / PR 评论里 `@arsrna/blender-docker(渲染姬)` 说一句需求，她就帮你把工程渲出来并把图贴回评论。
+
+```
+@arsrna/blender-docker(渲染姬) 用 cycles cpu 渲 test.blend 第 1 帧，1920x1080，采样 64
+@arsrna/blender-docker(渲染姬) 渲染 test.blend 的 1~24 帧序列，出 JPEG
+@arsrna/blender-docker(渲染姬) 渲一帧看看                      # 什么都不说 = EEVEE + 第1帧 + PNG
+```
+
+也可以在「代码 - 分支详情页 - 云原生构建 - 手动触发」里点「渲染工程」按钮，
+填一句话需求触发，不用写评论（按钮定义见 `.cnb/web_trigger.yml`）。
+
+## 引擎与设备策略
+
+| 情况 | 实际使用 |
+|---|---|
+| 默认（未指定） | **EEVEE**（走 GPU，Blender 4.5 对应 `BLENDER_EEVEE_NEXT`） |
+| 默认 + 探测不到 GPU | 自动回退 **CYCLES + CPU** |
+| 用户指定 `cycles` / `gpu` / `cpu` | 完全按用户指定执行，不再自动回退 |
+| EEVEE/GPU 渲染中途失败 | 未显式指定引擎时，自动回退 CYCLES/CPU 重试 |
+
+GPU 探测逻辑在 `scripts/render-npc/probe_gpu.py`：检查 `/dev/nvidia*` + glvnd EGL NVIDIA vendor
++ Vulkan ICD，三路任一命中即认为有 GPU。
+
+> 注意：容器若缺 NVIDIA 图形用户态库，EEVEE 会**静默回落到 CPU 软件渲染（llvmpipe）**，
+> 也就是「看着成功但慢得离谱」。作业报告里的 `device_used` 会写成
+> `cpu(llvmpipe · 缺 NVIDIA 图形栈)`，遇到这个跑一下 `bash gpu-setup/setup_gpu.sh` 即可修复。
+
+## 渲染 CLI（不经过 NPC 也能用）
+
+```bash
+bash scripts/render-npc/render.sh --blend test.blend [参数]
+```
+
+| 参数 | 说明 |
+|---|---|
+| `--blend PATH` | 要渲染的 `.blend`（必填） |
+| `--engine NAME` | `eevee` / `cycles` / `workbench` / `auto`（默认 auto=eevee） |
+| `--device NAME` | `gpu` / `cpu` / `auto`（默认 auto；仅对 cycles 有意义） |
+| `--samples N` | 采样数（eevee → `taa_render_samples`，cycles → `samples`） |
+| `--resolution WxH` | 例如 `1920x1080`、`3840x2160` |
+| `--res-percent N` | 分辨率百分比 1~100 |
+| `--frame SPEC` | `1` / `1,3,5` / `1-24` / `1..24`（默认 1） |
+| `--format FMT` | `PNG` / `JPEG` / `WEBP` / `OPEN_EXR` / `TIFF` |
+| `--outdir DIR` | 输出目录（默认 `/workspace/output`） |
+| `--scene NAME` `--camera NAME` `--threads N` | 场景 / 摄像机 / 线程 |
+| `--extra-json '{...}'` | 透传额外 bpy 指令（键名见 `blender_render.py` payload） |
+| `--no-fallback` | 有 GPU 但渲染失败时不回退 cycles |
+| `--no-install` | 缺 blender 时不自动下载安装 |
+
+示例：
+
+```bash
+# 默认：EEVEE(GPU)，无 GPU 自动回退 CYCLES/CPU，渲第 1 帧
+bash scripts/render-npc/render.sh --blend test.blend
+
+# 用户说「用 CPU 的 cycles，1920x1080，采样 64，渲 1~10 帧」
+bash scripts/render-npc/render.sh --blend test.blend \
+  --engine cycles --device cpu --resolution 1920x1080 --samples 64 \
+  --frame 1-10 --outdir /workspace/output/anim
+```
+
+跑完会在输出目录留下 `render.log`、`render-request.json`，并在 stdout 末尾打印一行
+机器可读的 `RENDER_REPORT=<json>`（引擎、设备、分辨率、格式、帧、产物清单），
+NPC 就是靠这一行生成回帖的。
+
+## 目录结构
+
+```
+.cnb/settings.yml       # NPC 角色「渲染姬」的人设与工作流程
+.cnb.yml                # issue.comment@npc / pull_request.comment@npc 渲染流水线
+.cnb/web_trigger.yml    # 「渲染工程」手动触发按钮
+.cnb/skills/blender-render/SKILL.md    # NPC 技能：自然语言→CLI 参数、查指令的三条路径
+.agents/skills/blender-render/SKILL.md # 同上（项目级 skills 目录，兼容 CodeBuddy）
+scripts/render-npc/
+  render.sh             # 渲染入口：探测 GPU、回退引擎、组装指令、汇总报告
+  blender_render.py     # bpy 参数翻译器 + 渲染执行
+  probe_gpu.py          # GPU 能力探测
+```
+
+## 自定义与排错
+
+- 换个 NPC 名字：改 `.cnb/settings.yml` 里 `npc.roles[].name`（顶层 key 与角色名要一致）
+- 想让渲染跑在别的镜像：改 `.cnb.yml` 里 `docker.image`
+- 想用 CPU 节点跑（省钱、不在乎速度）：把 `runner.tags` 改成 `cnb:arch:amd64` 并加大 `cpus`
+- 渲染很慢：先 `--res-percent 25 --samples 8` 出小样确认构图，再跑正式参数
+- 报错排查：看输出目录的 `render.log`，以及 `RENDER_REPORT` 里的 `error` 字段
+
+
 # 渲染脚本设置
 
 要注意，由于我的项目使用了mmd插件，导致摄像机视角有问题，透视变成了正交，所以加入了一句**强行让视角转为透视**，如果没有出现问题，或者摄像机本身就是正交视角的，请注释这一部分。
