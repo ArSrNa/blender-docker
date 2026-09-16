@@ -35,7 +35,7 @@ ArRM及详细参考文档：https://arsrna-it.feishu.cn/docx/CzGYdwx5ooI6pvxmaJQ
 ```bash
 cd arrm
 # 启动控制端
-./arrm/arrm_control-linux &
+./arrm/arrm_control_linux &
 # 启动从机端
 ./arrm/arrm_slave_linux &
 ```
