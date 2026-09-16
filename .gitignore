@@ -35,3 +35,11 @@ flamenco-manager-storage
 
 /opt/nvidia-installers/
 output
+
+# ArRM 二进制（体积过大，走 Git LFS）
+arrm/arrm_*
+!arrm/arrm_control_linux
+!arrm/arrm_slave_linux
+
+# 回收站
+.Trash-*/

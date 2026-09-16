@@ -1,4 +1,4 @@
-./arrm/arrm_control-linux filter=lfs diff=lfs merge=lfs -text
-./arrm/arrm_slave_linux filter=lfs diff=lfs merge=lfs -text
+arrm/arrm_control_linux filter=lfs diff=lfs merge=lfs -text
+arrm/arrm_slave_linux filter=lfs diff=lfs merge=lfs -text
 test.blend filter=lfs diff=lfs merge=lfs -text
 gpu-setup/NVIDIA-Linux-x86_64-580.95.05.run filter=lfs diff=lfs merge=lfs -text
