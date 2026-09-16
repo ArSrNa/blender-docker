@@ -24,7 +24,7 @@ RUN apt-get update && \
 	libglu1-mesa \
 	libxi6 libxrender1 libxkbcommon0 \
 	libsm6 libxext6 libxcursor1 libxinerama1 libgl1-mesa-dev libgl1-mesa-glx libgl1-mesa-dri libegl1 \
-	libglvnd0 libglx0 kmod \
+	libglvnd0 libglx0 kmod libatomic1 \
 	xz-utils htop axel vulkan-tools libvulkan1 libvulkan-dev mesa-vulkan-drivers mesa-utils-extra
 
 #VNC环境
