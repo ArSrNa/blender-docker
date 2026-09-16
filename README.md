@@ -74,7 +74,7 @@ Job Type一定要选择`Simple Blender Render`，然后设置帧数，把链接�
 
 ![](image/flamenco-setting.png)
 
-![](image/render.png)
+![](image/render.avif)
 
 最后点击`Submit to Flamenco`，等待上传完毕后网页就会看到任务。等待任务完毕即可。
 
