@@ -1,3 +1,5 @@
+![](https://cnb.cool/arsrna/arsrna/-/git/raw/main/nikon/render.avif)
+
 # Blender-docker
 
 本镜像参考blender官方环境安装，预装Flamenco+Blender以及GPU相关驱动。
