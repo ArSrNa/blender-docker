@@ -1,0 +1,15 @@
+# 手动触发按钮：在「代码 - 分支详情页」出现「渲染工程」按钮。
+# 填一句话需求即可让「render」执行渲染，无需在 Issue 里 @ 她。
+branch:
+  - buttons:
+      - name: 渲染工程
+        description: 描述要渲染什么，例如：用 cycles cpu 渲 test.blend 第 1 帧，1920x1080
+        event: web_trigger_render
+        groupName: 渲染
+        inputs:
+          userPrompt:
+            name: 渲染需求
+            description: 一句话描述，支持指定引擎/设备/分辨率/帧范围
+            type: textarea
+            required: true
+            default: 用 EEVEE 渲染 test.blend 第 1 帧，1920x1080
