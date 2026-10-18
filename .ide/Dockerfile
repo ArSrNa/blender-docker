@@ -50,7 +50,7 @@ ENV XDG_RUNTIME_DIR=/tmp/xdg
 #
 # 若宿主机驱动日后升级导致版本不匹配，运行时 start.sh / .ide/nvidia-graphics-setup.sh
 # 仍会按真实版本自愈校正，本步骤只是让“常见版本”开箱即用。
-ARG NVIDIA_DRIVER_VERSION=580.95.05
+ARG NVIDIA_DRIVER_VERSION=580.178.04
 ENV NVIDIA_DRIVER_VERSION=${NVIDIA_DRIVER_VERSION}
 
 COPY gpu-setup/NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run /opt/nvidia-installers/NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run
