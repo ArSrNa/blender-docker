@@ -97,7 +97,7 @@ $:
 demo:
   vscode:
     - docker:
-        image: docker.cnb.cool/arsrna/blender-docker/blender:4.5.11-test
+        image: docker.cnb.cool/arsrna/blender-docker/blender:4.5.11
       runner:
         tags: cnb:arch:amd64:gpu
       services:
