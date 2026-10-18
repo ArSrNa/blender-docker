@@ -1,4 +1,48 @@
 $:
+
+  # --- 渲染 NPC：在 Issue / PR 评论中 @<repo>(render) 触发 ---
+  # 环境用本仓库自建的 blender 镜像；GPU 节点 tags 为 cnb:arch:amd64:gpu，
+  # 若调度到无 GPU 的节点，render.sh 会自动回退 CYCLES + CPU。
+  issue.comment@npc:
+    - docker:
+        image: ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}/blender:4.5.11
+      runner:
+        tags: cnb:arch:amd64:gpu
+      env:
+        RENDER_OUTDIR: /workspace/output
+      stages:
+        - name: npc go
+          type: npc:go
+
+  pull_request.comment@npc:
+    - docker:
+        image: ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}/blender:4.5.11
+      runner:
+        tags: cnb:arch:amd64:gpu
+      env:
+        RENDER_OUTDIR: /workspace/output
+      stages:
+        - name: npc go
+          type: npc:go
+
+  # 页面按钮手动触发渲染，无需写评论（按钮定义见 .cnb/web_trigger.yml）
+  web_trigger_render:
+    - docker:
+        image: ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}/blender:4.5.11
+      runner:
+        tags: cnb:arch:amd64:gpu
+      env:
+        RENDER_OUTDIR: /workspace/output
+      stages:
+        - name: npc go
+          type: npc:go
+          options:
+            role: render
+            systemPrompt: |
+              你是「render」，本仓库的 Blender 渲染助手。
+              按 blender-render skill 执行用户要求的渲染任务，先小样验证再出正式图。
+            userPrompt: $userPrompt
+
   vscode:
     - docker:
         # dockerfile: .ide/Dockerfile
