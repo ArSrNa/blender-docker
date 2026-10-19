@@ -43,33 +43,33 @@ ENV XDG_RUNTIME_DIR=/tmp/xdg
 # 基础镜像 cuda:*-runtime 只带计算栈，缺图形用户态库；且用户态库版本必须与宿主机
 # 内核模块精确匹配。
 #
-# 构建时直接把仓库里预下载好的 NVIDIA-Linux-x86_64-<VER>.run COPY 进镜像，只装
-# 用户态库（--no-kernel-module，绝不碰内核）。这样打开环境不必再联网下载安装器，
-# 秒级就绪。版本由 ARG NVIDIA_DRIVER_VERSION 控制，默认与当前宿主机 580.95.05 一致，
-# 务必与宿主机的 nvidia-smi 驱动版本保持一致（见 gpu-setup/ 下的 .run 文件名）。
+# 安装器（~400MB）不再入仓库，构建时按 ARG NVIDIA_DRIVER_VERSION 从 NVIDIA 官方
+# 下载，只装用户态库（--no-kernel-module，绝不碰内核），装完即删。版本需与宿主机
+# nvidia-smi 驱动一致。
 #
 # 若宿主机驱动日后升级导致版本不匹配，运行时 start.sh / .ide/nvidia-graphics-setup.sh
 # 仍会按真实版本自愈校正，本步骤只是让“常见版本”开箱即用。
 ARG NVIDIA_DRIVER_VERSION=580.178.04
 ENV NVIDIA_DRIVER_VERSION=${NVIDIA_DRIVER_VERSION}
 
-COPY gpu-setup/NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run /opt/nvidia-installers/NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run
-
 RUN export PATH="$PATH:/usr/sbin:/sbin" && \
-	chmod +x /opt/nvidia-installers/NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run && \
-	sh /opt/nvidia-installers/NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run \
+	RUN_FILE="/tmp/NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run" && \
+	curl -fsSL -o "$RUN_FILE" \
+	"https://download.nvidia.com/XFree86/Linux-x86_64/${NVIDIA_DRIVER_VERSION}/NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run" && \
+	chmod +x "$RUN_FILE" && \
+	{ sh "$RUN_FILE" \
 	--silent \
 	--no-kernel-module --no-kernel-modules \
 	--no-nvidia-modprobe --no-drm \
 	--no-x-check --no-questions \
-	--install-libglvnd --skip-depmod >/tmp/nvidia-install.log 2>&1 || true && \
+	--install-libglvnd --skip-depmod >/tmp/nvidia-install.log 2>&1 || true; } && \
 	ldconfig && \
 	mkdir -p /usr/share/glvnd/egl_vendor.d /etc/vulkan/icd.d && \
 	printf '%s\n' '{"file_format_version":"1.0.0","ICD":{"library_path":"libEGL_nvidia.so.0"}}' \
 	> /usr/share/glvnd/egl_vendor.d/10_nvidia.json && \
 	printf '%s\n' '{"file_format_version":"1.0.0","ICD":{"library_path":"libGLX_nvidia.so.0","api_version":"1.3.0"}}' \
 	> /etc/vulkan/icd.d/nvidia_icd.json && \
-	rm -f /opt/nvidia-installers/NVIDIA-Linux-x86_64-${NVIDIA_DRIVER_VERSION}.run
+	rm -f "$RUN_FILE"
 
 # 安装 code-server 和 vscode 常用插件
 RUN curl -fsSL https://code-server.dev/install.sh | sh

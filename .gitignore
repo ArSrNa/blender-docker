@@ -36,6 +36,9 @@ flamenco-manager-storage
 /opt/nvidia-installers/
 output
 
+# NVIDIA 驱动安装包：体积近 400MB，不入库，由 CI / setup_gpu.sh 按版本下载
+gpu-setup/*.run
+
 # ArRM 二进制（体积过大，走 Git LFS）
 arrm/arrm_*
 !arrm/arrm_control_linux
